@@ -1,19 +1,32 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StatusBar as RNStatusBar, StyleSheet, View } from 'react-native';
 
 import { DependenciesProvider } from './src/presentation/dependencies/DependenciesContext';
+import { AppNavigator } from './src/presentation/navigation/AppNavigator';
 import { NavigationProvider } from './src/presentation/navigation/NavigationContext';
-import { PokemonListScreen } from './src/presentation/screens/PokemonListScreen/PokemonListScreen';
 import { useTheme } from './src/presentation/theme/useTheme';
+
+// SafeAreaView salió del core de RN; esto es un reemplazo manual simple.
+const TOP_INSET = Platform.select({ ios: 47, android: RNStatusBar.currentHeight ?? 0, default: 0 });
+const BOTTOM_INSET = Platform.select({ ios: 24, default: 0 });
 
 function Root() {
   const { palette, isDark } = useTheme();
 
   return (
-    <View style={[styles.flex, { backgroundColor: palette.background }]}>
+    <View
+      style={[
+        styles.flex,
+        {
+          backgroundColor: palette.background,
+          paddingTop: TOP_INSET,
+          paddingBottom: BOTTOM_INSET,
+        },
+      ]}
+    >
       <StatusBar style={isDark ? 'light' : 'dark'} />
-      <PokemonListScreen />
+      <AppNavigator />
     </View>
   );
 }
