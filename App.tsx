@@ -1,20 +1,33 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
 
-export default function App() {
+import { DependenciesProvider } from './src/presentation/dependencies/DependenciesContext';
+import { NavigationProvider } from './src/presentation/navigation/NavigationContext';
+import { PokemonListScreen } from './src/presentation/screens/PokemonListScreen/PokemonListScreen';
+import { useTheme } from './src/presentation/theme/useTheme';
+
+function Root() {
+  const { palette, isDark } = useTheme();
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
+    <View style={[styles.flex, { backgroundColor: palette.background }]}>
+      <StatusBar style={isDark ? 'light' : 'dark'} />
+      <PokemonListScreen />
     </View>
   );
 }
 
+export default function App() {
+  return (
+    <DependenciesProvider>
+      <NavigationProvider>
+        <Root />
+      </NavigationProvider>
+    </DependenciesProvider>
+  );
+}
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  flex: { flex: 1 },
 });
