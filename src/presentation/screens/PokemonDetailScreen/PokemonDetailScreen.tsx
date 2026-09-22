@@ -1,4 +1,4 @@
-import React from 'react';
+import {useCallback} from 'react';
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import {
@@ -19,6 +19,9 @@ import { getFriendlyErrorMessage } from '../../utils/errorMessages';
 import { DetailHeader } from './components/DetailHeader';
 import { DetailSkeleton } from './components/DetailSkeleton';
 import { StatBar } from './components/StatBar';
+import React from 'react';
+import { useFavorites } from '../../screens/Favoritos/FavoriteContext';
+
 
 interface PokemonDetailScreenProps {
   params: PokemonDetailParams;
@@ -28,14 +31,27 @@ export function PokemonDetailScreen({ params }: PokemonDetailScreenProps) {
   const { palette } = useTheme();
   const { goBack } = useNavigation();
   const { detail, isLoading, error, isFromCache, retry } = usePokemonDetail(params.pokemonId);
-
+const { isFavorite, toggleFavorite } = useFavorites();
   const headerTitle = detail
     ? formatDisplayName(detail.name)
     : formatDisplayName(params.pokemonName);
 
+   const handleToggleFavorite = useCallback(() => {
+    if (detail) {
+      toggleFavorite(detail);
+    }
+  }, [detail, toggleFavorite]);
+
   return (
     <View style={[styles.container, { backgroundColor: palette.background }]}>
-      <DetailHeader title={headerTitle} onBack={goBack} />
+      <DetailHeader title={headerTitle} 
+      isFavorite={detail ? isFavorite(detail.id) : false}
+      onBack={goBack} 
+    
+      onToggleFavorite={handleToggleFavorite}
+
+      />
+
       {isFromCache && detail ? <OfflineBanner /> : null}
 
       {isLoading && !detail ? <DetailSkeleton /> : null}
@@ -155,4 +171,5 @@ const styles = StyleSheet.create({
   metricValue: { fontSize: 16, fontWeight: '700' },
   metricLabel: { fontSize: 12, marginTop: 2 },
   abilityText: { fontSize: 14, marginBottom: spacing.xs },
+
 });

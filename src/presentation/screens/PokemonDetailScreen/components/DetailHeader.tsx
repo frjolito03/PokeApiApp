@@ -7,9 +7,11 @@ import { useTheme } from '../../../theme/useTheme';
 interface DetailHeaderProps {
   title: string;
   onBack: () => void;
+  onToggleFavorite: () => void;
+  isFavorite: boolean;
 }
 
-export function DetailHeader({ title, onBack }: DetailHeaderProps) {
+export function DetailHeader({ isFavorite, title, onBack, onToggleFavorite }: DetailHeaderProps) {
   const { palette } = useTheme();
 
   return (
@@ -30,7 +32,15 @@ export function DetailHeader({ title, onBack }: DetailHeaderProps) {
       >
         {title}
       </Text>
-      <View style={styles.backButton} />
+      <Pressable
+        onPress={onToggleFavorite}
+        accessibilityRole="button"
+        accessibilityLabel={isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+        hitSlop={12}
+        style={({ pressed }) => [styles.favoriteButton, { opacity: pressed ? 0.6 : 1 }]}
+      >
+        <Text style={[styles.favoriteIcon, { color: palette.text }]}>{isFavorite ? '❤️' : '🤍'}</Text>
+      </Pressable>
     </View>
   );
 }
@@ -46,4 +56,6 @@ const styles = StyleSheet.create({
   backButton: { width: 32, height: 32, alignItems: 'center', justifyContent: 'center' },
   backArrow: { fontSize: 22, fontWeight: '700' },
   title: { flex: 1, fontSize: 20, fontWeight: '800', textAlign: 'center' },
+  favoriteButton: { width: 32, height: 32, alignItems: 'center', justifyContent: 'center' },
+  favoriteIcon: { fontSize: 22, fontWeight: '700' },
 });

@@ -5,6 +5,7 @@ import { Platform, StatusBar as RNStatusBar, StyleSheet, View } from 'react-nati
 import { DependenciesProvider } from './src/presentation/dependencies/DependenciesContext';
 import { AppNavigator } from './src/presentation/navigation/AppNavigator';
 import { NavigationProvider } from './src/presentation/navigation/NavigationContext';
+import { FavoritesProvider } from './src/presentation/screens/Favoritos/FavoriteContext';
 import { useTheme } from './src/presentation/theme/useTheme';
 
 // SafeAreaView salió del core de RN; esto es un reemplazo manual simple.
@@ -34,9 +35,11 @@ function Root() {
 export default function App() {
   return (
     <DependenciesProvider>
-      <NavigationProvider>
-        <Root />
-      </NavigationProvider>
+      <FavoritesProvider>
+        <NavigationProvider>
+          <Root />
+        </NavigationProvider>
+      </FavoritesProvider>
     </DependenciesProvider>
   );
 }

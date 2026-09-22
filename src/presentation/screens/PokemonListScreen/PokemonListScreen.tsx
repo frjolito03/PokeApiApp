@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { PokemonSummary } from '../../../domain/models/PokemonSummary';
 import { EmptyState } from '../../components/EmptyState';
@@ -18,7 +18,7 @@ const NUM_COLUMNS = 2;
 
 export function PokemonListScreen() {
   const { palette } = useTheme();
-  const { navigateToDetail } = useNavigation();
+  const { navigateToDetail, navigateToFavoriteDetail } = useNavigation();
   const { items, isInitialLoading, isLoadingMore, error, isFromCache, hasMore, loadMore, retry } =
     usePokemonList();
 
@@ -71,6 +71,15 @@ export function PokemonListScreen() {
         <Text style={[styles.title, { color: palette.text }]} accessibilityRole="header">
           Pokédex
         </Text>
+        <Pressable
+          onPress={navigateToFavoriteDetail}
+          accessibilityRole="button"
+          accessibilityLabel="Ver favoritos"
+          hitSlop={12}
+          style={({ pressed }) => [styles.favoritesButton, { opacity: pressed ? 0.6 : 1 }]}
+        >
+          <Text style={styles.favoritesIcon}>❤️</Text>
+        </Pressable>
       </View>
       {isFromCache && items.length > 0 ? <OfflineBanner /> : null}
       {renderContent()}
@@ -80,7 +89,16 @@ export function PokemonListScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  header: { paddingHorizontal: spacing.lg, paddingTop: spacing.lg, paddingBottom: spacing.sm },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.lg,
+    paddingBottom: spacing.sm,
+  },
   title: { fontSize: 28, fontWeight: '800' },
+  favoritesButton: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
+  favoritesIcon: { fontSize: 22 },
   listContent: { paddingBottom: spacing.xl },
 });
