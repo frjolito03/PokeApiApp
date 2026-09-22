@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import {
@@ -10,6 +10,7 @@ import {
 import { ErrorState } from '../../components/ErrorState';
 import { OfflineBanner } from '../../components/OfflineBanner';
 import { TypeBadge } from '../../components/TypeBadge';
+import { useFavorites } from '../../favorites/FavoritesContext';
 import { usePokemonDetail } from '../../hooks/usePokemonDetail';
 import { useNavigation } from '../../navigation/NavigationContext';
 import { PokemonDetailParams } from '../../navigation/types';
@@ -28,12 +29,13 @@ export function PokemonDetailScreen({ params }: PokemonDetailScreenProps) {
   const { palette } = useTheme();
   const { goBack } = useNavigation();
   const { detail, isLoading, error, isFromCache, retry } = usePokemonDetail(params.pokemonId);
-
-  const [isFavorite, setIsFavorite] = useState(false);
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   const handleToggleFavorite = useCallback(() => {
-    setIsFavorite((previous) => !previous);
-  }, []);
+    if (detail) {
+      toggleFavorite(detail);
+    }
+  }, [detail, toggleFavorite]);
 
   const headerTitle = detail
     ? formatDisplayName(detail.name)
@@ -44,8 +46,8 @@ export function PokemonDetailScreen({ params }: PokemonDetailScreenProps) {
       <DetailHeader
         title={headerTitle}
         onBack={goBack}
-        isFavorite={isFavorite}
-        onToggleFavorite={handleToggleFavorite}
+        isFavorite={detail ? isFavorite(detail.id) : false}
+        onToggleFavorite={detail ? handleToggleFavorite : undefined}
       />
       {isFromCache && detail ? <OfflineBanner /> : null}
 

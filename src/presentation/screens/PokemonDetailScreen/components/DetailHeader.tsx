@@ -7,8 +7,8 @@ import { useTheme } from '../../../theme/useTheme';
 interface DetailHeaderProps {
   title: string;
   onBack: () => void;
-  isFavorite: boolean;
-  onToggleFavorite: () => void;
+  isFavorite?: boolean;
+  onToggleFavorite?: () => void;
 }
 
 export function DetailHeader({ title, onBack, isFavorite, onToggleFavorite }: DetailHeaderProps) {
@@ -32,15 +32,19 @@ export function DetailHeader({ title, onBack, isFavorite, onToggleFavorite }: De
       >
         {title}
       </Text>
-      <Pressable
-        onPress={onToggleFavorite}
-        accessibilityRole="button"
-        accessibilityLabel={isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
-        hitSlop={12}
-        style={({ pressed }) => [styles.backButton, { opacity: pressed ? 0.6 : 1 }]}
-      >
-        <Text style={styles.backArrow}>{isFavorite ? '⭐' : '☆'}</Text>
-      </Pressable>
+      {onToggleFavorite ? (
+        <Pressable
+          onPress={onToggleFavorite}
+          accessibilityRole="button"
+          accessibilityLabel={isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+          hitSlop={12}
+          style={({ pressed }) => [styles.backButton, { opacity: pressed ? 0.6 : 1 }]}
+        >
+          <Text style={styles.backArrow}>{isFavorite ? '⭐' : '☆'}</Text>
+        </Pressable>
+      ) : (
+        <View style={styles.backButton} />
+      )}
     </View>
   );
 }

@@ -10,7 +10,7 @@ interface PokemonListItemCardProps {
   pokemon: PokemonSummary;
   onPress: (pokemon: PokemonSummary) => void;
   isFavorite: boolean;
-  onToggleFavorite: (pokemonId: number) => void;
+  onToggleFavorite: (pokemon: PokemonSummary) => void;
 }
 
 export function PokemonListItemCard({
@@ -40,7 +40,7 @@ export function PokemonListItemCard({
       <Pressable
         onPress={(event) => {
           event.stopPropagation();
-          onToggleFavorite(pokemon.id);
+          onToggleFavorite(pokemon);
         }}
         hitSlop={8}
         style={styles.favoriteButton}

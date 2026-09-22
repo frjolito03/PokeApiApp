@@ -1,10 +1,11 @@
-import React, { useCallback, useState } from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import React, { useCallback } from 'react';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { PokemonSummary } from '../../../domain/models/PokemonSummary';
 import { EmptyState } from '../../components/EmptyState';
 import { ErrorState } from '../../components/ErrorState';
 import { OfflineBanner } from '../../components/OfflineBanner';
+import { useFavorites } from '../../favorites/FavoritesContext';
 import { usePokemonList } from '../../hooks/usePokemonList';
 import { useNavigation } from '../../navigation/NavigationContext';
 import { spacing } from '../../theme/spacing';
@@ -18,11 +19,10 @@ const NUM_COLUMNS = 2;
 
 export function PokemonListScreen() {
   const { palette } = useTheme();
-  const { navigateToDetail } = useNavigation();
+  const { navigateToDetail, navigateToFavorites } = useNavigation();
   const { items, isInitialLoading, isLoadingMore, error, isFromCache, hasMore, loadMore, retry } =
     usePokemonList();
-
-  const [favoriteIds, setFavoriteIds] = useState<Set<number>>(new Set());
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   const handlePress = useCallback(
     (pokemon: PokemonSummary) => {
@@ -30,18 +30,6 @@ export function PokemonListScreen() {
     },
     [navigateToDetail]
   );
-
-  const handleToggleFavorite = useCallback((pokemonId: number) => {
-    setFavoriteIds((previous) => {
-      const next = new Set(previous);
-      if (next.has(pokemonId)) {
-        next.delete(pokemonId);
-      } else {
-        next.add(pokemonId);
-      }
-      return next;
-    });
-  }, []);
 
   const renderContent = () => {
     if (isInitialLoading && items.length === 0) {
@@ -71,8 +59,8 @@ export function PokemonListScreen() {
           <PokemonListItemCard
             pokemon={item}
             onPress={handlePress}
-            isFavorite={favoriteIds.has(item.id)}
-            onToggleFavorite={handleToggleFavorite}
+            isFavorite={isFavorite(item.id)}
+            onToggleFavorite={toggleFavorite}
           />
         )}
         onEndReachedThreshold={0.5}
@@ -92,6 +80,14 @@ export function PokemonListScreen() {
         <Text style={[styles.title, { color: palette.text }]} accessibilityRole="header">
           Pokédex
         </Text>
+        <Pressable
+          onPress={navigateToFavorites}
+          hitSlop={8}
+          accessibilityRole="button"
+          accessibilityLabel="Ver favoritos"
+        >
+          <Text style={styles.favoritesLink}>⭐ Favoritos</Text>
+        </Pressable>
       </View>
       {isFromCache && items.length > 0 ? <OfflineBanner /> : null}
       {renderContent()}
@@ -101,7 +97,15 @@ export function PokemonListScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  header: { paddingHorizontal: spacing.lg, paddingTop: spacing.lg, paddingBottom: spacing.sm },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.lg,
+    paddingBottom: spacing.sm,
+  },
   title: { fontSize: 28, fontWeight: '800' },
+  favoritesLink: { fontSize: 14, fontWeight: '600' },
   listContent: { paddingBottom: spacing.xl },
 });

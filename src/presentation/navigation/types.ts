@@ -1,6 +1,7 @@
 export enum ScreenName {
   PokemonList = 'PokemonList',
   PokemonDetail = 'PokemonDetail',
+  Favorites = 'Favorites',
 }
 
 export interface PokemonDetailParams {
@@ -10,4 +11,5 @@ export interface PokemonDetailParams {
 
 export type NavigationEntry =
   | { screen: ScreenName.PokemonList }
-  | { screen: ScreenName.PokemonDetail; params: PokemonDetailParams };
+  | { screen: ScreenName.PokemonDetail; params: PokemonDetailParams }
+  | { screen: ScreenName.Favorites };

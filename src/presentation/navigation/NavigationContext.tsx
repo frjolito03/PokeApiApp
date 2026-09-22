@@ -15,6 +15,7 @@ interface NavigationContextValue {
   current: NavigationEntry;
   canGoBack: boolean;
   navigateToDetail: (params: PokemonDetailParams) => void;
+  navigateToFavorites: () => void;
   goBack: () => void;
 }
 
@@ -27,6 +28,10 @@ export function NavigationProvider({ children }: PropsWithChildren) {
 
   const navigateToDetail = useCallback((params: PokemonDetailParams) => {
     setStack((previous) => [...previous, { screen: ScreenName.PokemonDetail, params }]);
+  }, []);
+
+  const navigateToFavorites = useCallback(() => {
+    setStack((previous) => [...previous, { screen: ScreenName.Favorites }]);
   }, []);
 
   const goBack = useCallback(() => {
@@ -50,9 +55,10 @@ export function NavigationProvider({ children }: PropsWithChildren) {
       current: stack[stack.length - 1],
       canGoBack: stack.length > 1,
       navigateToDetail,
+      navigateToFavorites,
       goBack,
     }),
-    [stack, navigateToDetail, goBack]
+    [stack, navigateToDetail, navigateToFavorites, goBack]
   );
 
   return <NavigationContext.Provider value={value}>{children}</NavigationContext.Provider>;
