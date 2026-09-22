@@ -7,9 +7,11 @@ import { useTheme } from '../../../theme/useTheme';
 interface DetailHeaderProps {
   title: string;
   onBack: () => void;
+  isFavorite: boolean;
+  onToggleFavorite: () => void;
 }
 
-export function DetailHeader({ title, onBack }: DetailHeaderProps) {
+export function DetailHeader({ title, onBack, isFavorite, onToggleFavorite }: DetailHeaderProps) {
   const { palette } = useTheme();
 
   return (
@@ -30,7 +32,15 @@ export function DetailHeader({ title, onBack }: DetailHeaderProps) {
       >
         {title}
       </Text>
-      <View style={styles.backButton} />
+      <Pressable
+        onPress={onToggleFavorite}
+        accessibilityRole="button"
+        accessibilityLabel={isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+        hitSlop={12}
+        style={({ pressed }) => [styles.backButton, { opacity: pressed ? 0.6 : 1 }]}
+      >
+        <Text style={styles.backArrow}>{isFavorite ? '⭐' : '☆'}</Text>
+      </Pressable>
     </View>
   );
 }

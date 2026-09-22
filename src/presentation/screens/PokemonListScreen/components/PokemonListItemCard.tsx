@@ -9,9 +9,16 @@ import { useTheme } from '../../../theme/useTheme';
 interface PokemonListItemCardProps {
   pokemon: PokemonSummary;
   onPress: (pokemon: PokemonSummary) => void;
+  isFavorite: boolean;
+  onToggleFavorite: (pokemonId: number) => void;
 }
 
-export function PokemonListItemCard({ pokemon, onPress }: PokemonListItemCardProps) {
+export function PokemonListItemCard({
+  pokemon,
+  onPress,
+  isFavorite,
+  onToggleFavorite,
+}: PokemonListItemCardProps) {
   const { palette } = useTheme();
   const displayName = formatDisplayName(pokemon.name);
 
@@ -30,6 +37,19 @@ export function PokemonListItemCard({ pokemon, onPress }: PokemonListItemCardPro
         },
       ]}
     >
+      <Pressable
+        onPress={(event) => {
+          event.stopPropagation();
+          onToggleFavorite(pokemon.id);
+        }}
+        hitSlop={8}
+        style={styles.favoriteButton}
+        accessibilityRole="button"
+        accessibilityLabel={isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+      >
+        <Text style={styles.favoriteIcon}>{isFavorite ? '⭐' : '☆'}</Text>
+      </Pressable>
+
       <Text style={[styles.number, { color: palette.textSecondary }]}>
         {formatPokedexNumber(pokemon.id)}
       </Text>
@@ -58,4 +78,11 @@ const styles = StyleSheet.create({
   number: { fontSize: 12, alignSelf: 'flex-start', fontWeight: '600' },
   image: { width: 80, height: 80, marginVertical: spacing.xs },
   name: { fontSize: 14, fontWeight: '600' },
+  favoriteButton: {
+    position: 'absolute',
+    top: spacing.xs,
+    right: spacing.xs,
+    zIndex: 1,
+  },
+  favoriteIcon: { fontSize: 18 },
 });

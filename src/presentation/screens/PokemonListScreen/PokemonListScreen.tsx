@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 
 import { PokemonSummary } from '../../../domain/models/PokemonSummary';
@@ -22,12 +22,26 @@ export function PokemonListScreen() {
   const { items, isInitialLoading, isLoadingMore, error, isFromCache, hasMore, loadMore, retry } =
     usePokemonList();
 
+  const [favoriteIds, setFavoriteIds] = useState<Set<number>>(new Set());
+
   const handlePress = useCallback(
     (pokemon: PokemonSummary) => {
       navigateToDetail({ pokemonId: pokemon.id, pokemonName: pokemon.name });
     },
     [navigateToDetail]
   );
+
+  const handleToggleFavorite = useCallback((pokemonId: number) => {
+    setFavoriteIds((previous) => {
+      const next = new Set(previous);
+      if (next.has(pokemonId)) {
+        next.delete(pokemonId);
+      } else {
+        next.add(pokemonId);
+      }
+      return next;
+    });
+  }, []);
 
   const renderContent = () => {
     if (isInitialLoading && items.length === 0) {
@@ -53,7 +67,14 @@ export function PokemonListScreen() {
         keyExtractor={(item) => String(item.id)}
         numColumns={NUM_COLUMNS}
         contentContainerStyle={styles.listContent}
-        renderItem={({ item }) => <PokemonListItemCard pokemon={item} onPress={handlePress} />}
+        renderItem={({ item }) => (
+          <PokemonListItemCard
+            pokemon={item}
+            onPress={handlePress}
+            isFavorite={favoriteIds.has(item.id)}
+            onToggleFavorite={handleToggleFavorite}
+          />
+        )}
         onEndReachedThreshold={0.5}
         onEndReached={hasMore ? loadMore : undefined}
         ListFooterComponent={isLoadingMore ? <ListFooterLoader /> : null}

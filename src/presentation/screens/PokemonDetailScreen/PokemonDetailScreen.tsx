@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import {
@@ -29,13 +29,24 @@ export function PokemonDetailScreen({ params }: PokemonDetailScreenProps) {
   const { goBack } = useNavigation();
   const { detail, isLoading, error, isFromCache, retry } = usePokemonDetail(params.pokemonId);
 
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  const handleToggleFavorite = useCallback(() => {
+    setIsFavorite((previous) => !previous);
+  }, []);
+
   const headerTitle = detail
     ? formatDisplayName(detail.name)
     : formatDisplayName(params.pokemonName);
 
   return (
     <View style={[styles.container, { backgroundColor: palette.background }]}>
-      <DetailHeader title={headerTitle} onBack={goBack} />
+      <DetailHeader
+        title={headerTitle}
+        onBack={goBack}
+        isFavorite={isFavorite}
+        onToggleFavorite={handleToggleFavorite}
+      />
       {isFromCache && detail ? <OfflineBanner /> : null}
 
       {isLoading && !detail ? <DetailSkeleton /> : null}
